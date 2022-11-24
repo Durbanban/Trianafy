@@ -24,15 +24,15 @@ public class TestModel {
     public void run() {
 
         Artist a1 = Artist.builder()
-                .name("Joaquín Sabina")
+                .artist("Joaquín Sabina")
                 .build();
 
         Artist a2 = Artist.builder()
-                .name("Dua Lipa")
+                .artist("Dua Lipa")
                 .build();
 
         Artist a3 = Artist.builder()
-                .name("Metallica")
+                .artist("Metallica")
                 .build();
 
         List<Artist> artistList = List.of(a1, a2, a3);
