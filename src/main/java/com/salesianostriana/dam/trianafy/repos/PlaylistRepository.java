@@ -10,6 +10,6 @@ import java.util.List;
 
 public interface PlaylistRepository extends JpaRepository<Playlist, Long> {
 
-    @Query(value = "SELECT pl FROM PlayList pl WHERE song MEMBER OF pl.songs")
+    @Query(value = "SELECT pl FROM Playlist pl WHERE :song MEMBER OF pl.songs")
     public List<Playlist> findPlaylistBySong(@Param("song") Song song);
 }
