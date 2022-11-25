@@ -3,15 +3,19 @@ package com.salesianostriana.dam.trianafy.controller;
 import com.salesianostriana.dam.trianafy.dto.SongDtoConverter;
 import com.salesianostriana.dam.trianafy.dto.SongDtoRequest;
 import com.salesianostriana.dam.trianafy.dto.SongDtoResponse;
+import com.salesianostriana.dam.trianafy.dto.SongDtoResponseById;
 import com.salesianostriana.dam.trianafy.model.Artist;
+import com.salesianostriana.dam.trianafy.model.Playlist;
 import com.salesianostriana.dam.trianafy.model.Song;
 import com.salesianostriana.dam.trianafy.service.ArtistService;
+import com.salesianostriana.dam.trianafy.service.PlaylistService;
 import com.salesianostriana.dam.trianafy.service.SongService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -21,6 +25,8 @@ import java.util.stream.Collectors;
 public class SongController {
 
     private final SongService songService;
+
+    private final PlaylistService playlistService;
 
     private final ArtistService artistService;
     private final SongDtoConverter songDtoConverter;
@@ -39,9 +45,9 @@ public class SongController {
     }
 
     @GetMapping("/song/{id}")
-    public ResponseEntity<Song> getSongById(@PathVariable Long id) {
+    public ResponseEntity<SongDtoResponseById> getSongById(@PathVariable Long id) {
         if(songService.existsById(id)) {
-            return ResponseEntity.of(songService.findById(id));
+            return ResponseEntity.status(HttpStatus.OK).body(songDtoConverter.toSongDtoById(songService.findById(id).get()));
         }else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
@@ -87,8 +93,23 @@ public class SongController {
 
     @DeleteMapping("/song/{id}")
     public ResponseEntity<?> deleteSong(@PathVariable Long id) {
+        boolean flag = false;
         if(songService.existsById(id)) {
+            /*List<Playlist> playlistsWithSong = playlistService.findAll()
+                    .stream()
+                    .filter(playlist -> playlist.getSongs().contains(songService.findById(id).get()))
+                    .collect(Collectors.toList());*/
+            List<Playlist> playlistsWithSong = playlistService.findPlaylistBySong(songService.findById(id).get());
+            playlistsWithSong
+                    .stream().forEach(playlist -> {
+                        while(playlist.getSongs().contains(songService.findById(id).get())) {
+                            playlist.deleteSong(songService.findById(id).get());
+                        }
+                    });
+
+
             songService.deleteById(id);
+
         }
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }

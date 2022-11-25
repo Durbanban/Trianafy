@@ -45,5 +45,10 @@ public class PlaylistService {
         return repository.existsById(id);
     }
 
+    public List<Playlist> findPlaylistBySong(Song song) {
+        return repository.findPlaylistBySong(song);
+    }
+
+
 
 }

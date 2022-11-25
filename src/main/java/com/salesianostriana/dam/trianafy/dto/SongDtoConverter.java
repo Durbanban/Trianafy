@@ -18,7 +18,7 @@ public class SongDtoConverter {
     public SongDtoResponse toSongDto(Song song) {
         String artistName = "";
         if(song.getArtist() != null) {
-            artistName = song.getArtist().getArtist();
+            artistName = song.getArtist().getName();
         }
         return SongDtoResponse
                 .builder()
@@ -27,6 +27,21 @@ public class SongDtoConverter {
                 .album(song.getAlbum())
                 .year(song.getYear())
                 .artist(artistName)
+                .build();
+    }
+
+    public SongDtoResponseById toSongDtoById(Song song) {
+        ArtistDtoResponse artist = new ArtistDtoResponse();
+        if(song.getArtist() != null) {
+            artist = ArtistDtoConverter.toArtistDto(song.getArtist());
+        }
+        return SongDtoResponseById
+                .builder()
+                .id(song.getId())
+                .title(song.getTitle())
+                .album(song.getAlbum())
+                .year(song.getYear())
+                .artist(artist)
                 .build();
     }
 

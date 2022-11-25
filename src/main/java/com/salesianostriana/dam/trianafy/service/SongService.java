@@ -42,10 +42,7 @@ public class SongService {
     }
 
     public List<Song> findByArtist(Optional<Artist> artist) {
-        return repository.findAll()
-                                    .stream()
-                                    .filter(song -> song.getArtist().equals(artist.get()))
-                                    .collect(Collectors.toList());
+        return repository.findByArtist(artist);
 
     }
 

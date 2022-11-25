@@ -40,9 +40,9 @@ public class ArtistController {
 
     @PostMapping("/artist/")
     public ResponseEntity<Artist> createArtist(@RequestBody Artist artista) {
-        if(artista.getArtist() != null
-                && !artista.getArtist().isEmpty()
-                && !artista.getArtist().isBlank()) {
+        if(artista.getName() != null
+                && !artista.getName().isEmpty()
+                && !artista.getName().isBlank()) {
             return ResponseEntity.status(HttpStatus.CREATED).body(artistService.add(artista));
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -53,7 +53,7 @@ public class ArtistController {
     public ResponseEntity<Artist> editArtist(@PathVariable Long id, @RequestBody Artist artista) {
         if(artistService.existsById(id)) {
             return ResponseEntity.of(artistService.findById(id).map(toEdit -> {
-                toEdit.setArtist(artista.getArtist());
+                toEdit.setName(artista.getName());
                 return Optional.of(artistService.edit(toEdit));
             }).orElse(Optional.empty()));
         }else {
