@@ -1,6 +1,6 @@
 # Trianafy API
 
-API Rest programada en Java con el framework [Spring](https://spring.io/),  con base de datos hibernate y JPA. Documentación hecha con OpenApi 3.0 y visualizada con Swagger-ui. Este readme consta además de una colección de [POSTMAN](https://www.postman.com/downloads/) para prácticar sus endpoints. Las historias de usuario se han hecho usando el tablón del proyecto de Github.
+API Rest programada en Java con el framework [Spring boot](https://spring.io/projects/spring-boot),  con base de datos hibernate y JPA. Documentación hecha con OpenApi 3.0 y visualizada con Swagger-ui. Este readme consta además de una colección de [POSTMAN](https://www.postman.com/downloads/) para prácticar sus endpoints. Las historias de usuario se han hecho usando el tablón del proyecto de Github.
 
 ## BASE URL
 
