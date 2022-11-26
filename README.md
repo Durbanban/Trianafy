@@ -48,4 +48,4 @@ DELETE BASE_URL/list/{idList}/song/{idSong} -> Se borra una canción de una list
 
 ## Colección POSTMAN
 
-- [JSON]
+- [JSON](https://github.com/Durbanban/p01-trianafy/blob/master/p01-trianafy.postman_collection.json)
