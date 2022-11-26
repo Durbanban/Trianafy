@@ -15,7 +15,7 @@ public class SongDtoConverter {
                 .build();
     }
 
-    public SongDtoResponse toSongDto(Song song) {
+    public static SongDtoResponse toSongDto(Song song) {
         String artistName = "";
         if(song.getArtist() != null) {
             artistName = song.getArtist().getName();
