@@ -1,6 +1,6 @@
 # Trianafy API
 
-API Rest programada en Java con el framework [Spring](https://spring.io/),  con base de datos hibernate y JPA. Documentación hecha con OpenApi 3.0 y visualizada con Swagger-ui. Este readme consta además de una colección de [POSTMAN](https://www.postman.com/downloads/) para prácticar sus endpoints.
+API Rest programada en Java con el framework [Spring](https://spring.io/),  con base de datos hibernate y JPA. Documentación hecha con OpenApi 3.0 y visualizada con Swagger-ui. Este readme consta además de una colección de [POSTMAN](https://www.postman.com/downloads/) para prácticar sus endpoints. Las historias de usuario se han hecho usando el tablón del proyecto de Github.
 
 ## BASE URL
 
@@ -49,3 +49,7 @@ DELETE BASE_URL/list/{idList}/song/{idSong} -> Se borra una canción de una list
 ## Colección POSTMAN
 
 - [JSON](https://github.com/Durbanban/p01-trianafy/blob/master/p01-trianafy.postman_collection.json)
+
+## Historias de usuario
+
+- [Tabla de historias de usuario](https://github.com/Durbanban/p01-trianafy/blob/master/Historias%20de%20usuario%20Trianafy.png)
