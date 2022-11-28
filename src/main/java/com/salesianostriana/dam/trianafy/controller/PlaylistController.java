@@ -6,6 +6,8 @@ import com.salesianostriana.dam.trianafy.model.Song;
 import com.salesianostriana.dam.trianafy.service.PlaylistService;
 import com.salesianostriana.dam.trianafy.service.SongService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -14,7 +16,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -147,9 +148,16 @@ public class PlaylistController {
             content = @Content)
     })
     @GetMapping("/list/{id}")
-    public ResponseEntity<Playlist> getPlaylistById(@PathVariable Long id) {
+    public ResponseEntity<PlaylistDtoResponseAllSongs> getPlaylistById(
+            @Parameter(
+                    description = "ID de la lista de reproducción a buscar",
+                    schema = @Schema(implementation = Long.class),
+                    name = "id",
+                    required = true
+            )
+            @PathVariable Long id) {
         if(playlistService.existsById(id)) {
-            return ResponseEntity.of(playlistService.findById(id));
+            return ResponseEntity.status(HttpStatus.OK).body(playlistDtoConverter.toPlayListDtoAllSongs(playlistService.findById(id).get()));
         }else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
@@ -246,7 +254,14 @@ public class PlaylistController {
             content = @Content)
     })
     @PutMapping("/list/{id}")
-    public ResponseEntity<PlaylistDtoResponseAll> editPlaylist(@PathVariable Long id, @RequestBody PlaylistDtoRequest playlistDtoRequest) {
+    public ResponseEntity<PlaylistDtoResponseAll> editPlaylist(
+            @Parameter(
+                    description = "ID de la lista de reproducción a editar",
+                    schema = @Schema(implementation = Long.class),
+                    name = "id",
+                    required = true
+            )
+            @PathVariable Long id, @RequestBody PlaylistDtoRequest playlistDtoRequest) {
         Playlist playlist = playlistDtoConverter.toPlaylist(playlistDtoRequest);
         if(!playlistService.existsById(id)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -266,7 +281,14 @@ public class PlaylistController {
     description = "Se ha borrado la lista de reproducción",
     content = @Content)
     @DeleteMapping("/list/{id}")
-    public ResponseEntity<?> deletePlaylist(@PathVariable Long id) {
+    public ResponseEntity<?> deletePlaylist(
+            @Parameter(
+                    description = "ID de la lista de reproducción a borrar",
+                    schema = @Schema(implementation = Long.class),
+                    name = "id",
+                    required = true
+            )
+            @PathVariable Long id) {
         if(playlistService.existsById(id)) {
             playlistService.deleteById(id);
         }
@@ -326,7 +348,14 @@ public class PlaylistController {
             content = @Content)
     })
     @GetMapping("/list/{id}/song/")
-    public ResponseEntity<PlaylistDtoResponseAllSongs> getAllSongsByPlaylistId(@PathVariable Long id) {
+    public ResponseEntity<PlaylistDtoResponseAllSongs> getAllSongsByPlaylistId(
+            @Parameter(
+                    description = "ID de la lista de reproducción a la que consultar todas las canciones",
+                    schema = @Schema(implementation = Long.class),
+                    name = "id",
+                    required = true
+            )
+            @PathVariable Long id) {
         if(!playlistService.existsById(id)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }else {
@@ -361,6 +390,20 @@ public class PlaylistController {
             @ApiResponse(responseCode = "404",
             description = "No se ha encontrado la canción o la lista de reproducción",
             content = @Content)
+    })
+    @Parameters(value = {
+            @Parameter(
+                    description = "ID de la lista de reproducción a la que consultar la canción",
+                    schema = @Schema(implementation = Long.class),
+                    name = "id1",
+                    required = true
+            ),
+            @Parameter(
+                    description = "ID de la canción a buscar",
+                    schema = @Schema(implementation = Long.class),
+                    name = "id2",
+                    required = true
+            )
     })
     @GetMapping("/list/{id1}/song/{id2}")
     public ResponseEntity<SongDtoResponseById> getSongFromPlayList(@PathVariable Long id1, @PathVariable Long id2) {
@@ -438,6 +481,20 @@ public class PlaylistController {
             description = "No se encuentra la canción o la lista de reproducción",
             content = @Content)
     })
+    @Parameters(value = {
+            @Parameter(
+                    description = "ID de la lista de reproducción a la que añadir la canción",
+                    schema = @Schema(implementation = Long.class),
+                    name = "id1",
+                    required = true
+            ),
+            @Parameter(
+                    description = "ID de la canción que se quiere añadir",
+                    schema = @Schema(implementation = Long.class),
+                    name = "id2",
+                    required = true
+            )
+    })
     @PostMapping("/list/{id1}/song/{id2}")
     public ResponseEntity<PlaylistDtoResponseAllSongs> addSongToPlaylist(@PathVariable Long id1, @PathVariable Long id2) {
         if(!playlistService.existsById(id1)) {
@@ -458,6 +515,20 @@ public class PlaylistController {
     @ApiResponse(responseCode = "204",
     description = "Se ha borrado la canción de la lista de reproducción",
     content = @Content)
+    @Parameters(value = {
+            @Parameter(
+                    description = "ID de la lista de reproducción de la que eliminar la canción",
+                    schema = @Schema(implementation = Long.class),
+                    name = "id1",
+                    required = true
+            ),
+            @Parameter(
+                    description = "ID de la canción que se quiere eliminar",
+                    schema = @Schema(implementation = Long.class),
+                    name = "id2",
+                    required = true
+            )
+    })
     @DeleteMapping("/list/{id1}/song/{id2}")
     public ResponseEntity<?> deleteSongFromPlayList(@PathVariable Long id1, @PathVariable Long id2) {
         if(!playlistService.existsById(id1)) {

@@ -4,6 +4,7 @@ import com.salesianostriana.dam.trianafy.model.Artist;
 import com.salesianostriana.dam.trianafy.service.ArtistService;
 import com.salesianostriana.dam.trianafy.service.SongService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -91,7 +92,14 @@ public class ArtistController {
             content = @Content)
     })
     @GetMapping("/artist/{id}")
-    public ResponseEntity<Artist> getArtistById(@PathVariable Long id) {
+    public ResponseEntity<Artist> getArtistById(
+            @Parameter(
+                    description = "ID del artista a buscar",
+                    schema = @Schema(implementation = Long.class),
+                    name = "id",
+                    required = true
+            )
+            @PathVariable Long id) {
         if(artistService.existsById(id)) {
             return ResponseEntity.of(artistService.findById(id));
         }else {
@@ -183,7 +191,14 @@ public class ArtistController {
                 content = @Content)
     })
     @PutMapping("/artist/{id}")
-    public ResponseEntity<Artist> editArtist(@PathVariable Long id, @RequestBody Artist artista) {
+    public ResponseEntity<Artist> editArtist(
+            @Parameter(
+                    description = "ID del artista a editar",
+                    schema = @Schema(implementation = Long.class),
+                    name = "id",
+                    required = true
+            )
+            @PathVariable Long id, @RequestBody Artist artista) {
         if(artistService.existsById(id)) {
             return ResponseEntity.of(artistService.findById(id).map(toEdit -> {
                 toEdit.setName(artista.getName());
@@ -198,7 +213,14 @@ public class ArtistController {
     description = "Se ha borrado el artista",
     content = @Content)
     @DeleteMapping("/artist/{id}")
-    public ResponseEntity<?> deleteArtist(@PathVariable Long id) {
+    public ResponseEntity<?> deleteArtist(
+            @Parameter(
+                    description = "ID del artista a borrar",
+                    schema = @Schema(implementation = Long.class),
+                    name = "id",
+                    required = true
+            )
+            @PathVariable Long id) {
         if(artistService.existsById(id)) {
             songService.findByArtist(artistService.findById(id))
                                                             .stream()
