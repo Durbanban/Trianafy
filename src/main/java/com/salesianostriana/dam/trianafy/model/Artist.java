@@ -1,6 +1,8 @@
 package com.salesianostriana.dam.trianafy.model;
 
 
+import com.fasterxml.jackson.annotation.JsonView;
+import com.salesianostriana.dam.trianafy.view.View;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,7 +21,6 @@ public class Artist {
     @Id
     @GeneratedValue
     private Long id;
-
     private String name;
 
 }

@@ -1,15 +1,14 @@
 package com.salesianostriana.dam.trianafy.controller;
 
-import com.salesianostriana.dam.trianafy.dto.SongDtoConverter;
-import com.salesianostriana.dam.trianafy.dto.SongDtoRequest;
-import com.salesianostriana.dam.trianafy.dto.SongDtoResponse;
-import com.salesianostriana.dam.trianafy.dto.SongDtoResponseById;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.salesianostriana.dam.trianafy.dto.*;
 import com.salesianostriana.dam.trianafy.model.Artist;
 import com.salesianostriana.dam.trianafy.model.Playlist;
 import com.salesianostriana.dam.trianafy.model.Song;
 import com.salesianostriana.dam.trianafy.service.ArtistService;
 import com.salesianostriana.dam.trianafy.service.PlaylistService;
 import com.salesianostriana.dam.trianafy.service.SongService;
+import com.salesianostriana.dam.trianafy.view.View;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -84,14 +83,15 @@ public class SongController {
             description = "No se han encontrado canciones",
             content = @Content)
     })
+    @JsonView(value = {View.SongView.songDtoResponseView.class})
     @GetMapping("/song/")
-    public ResponseEntity<List<SongDtoResponse>> getAllSongs() {
+    public ResponseEntity<List<SongDto>> getAllSongs() {
         if(songService.findAll().isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }else {
-            List<SongDtoResponse> result = songService.findAll()
+            List<SongDto> result = songService.findAll()
                     .stream()
-                    .map(SongDtoConverter::toSongDto)
+                    .map(SongDtoConverter::of)
                     .collect(Collectors.toList());
             return ResponseEntity.status(HttpStatus.OK).body(result);
         }
@@ -124,8 +124,9 @@ public class SongController {
             description = "No se ha encontrado la canción por el ID",
             content = @Content)
     })
+    @JsonView(value = View.SongView.songDtoResponseByIdView.class)
     @GetMapping("/song/{id}")
-    public ResponseEntity<SongDtoResponseById> getSongById(
+    public ResponseEntity<SongDto> getSongById(
             @Parameter(
                     description = "ID de la canción a buscar",
                     schema = @Schema(implementation = Long.class),
@@ -134,7 +135,7 @@ public class SongController {
             )
             @PathVariable Long id) {
         if(songService.existsById(id)) {
-            return ResponseEntity.status(HttpStatus.OK).body(songDtoConverter.toSongDtoById(songService.findById(id).get()));
+            return ResponseEntity.status(HttpStatus.OK).body(songDtoConverter.of(songService.findById(id).get()));
         }else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
@@ -182,8 +183,9 @@ public class SongController {
             description = "Los datos de la canción son incorrectos",
             content = @Content)
     })
+    @JsonView(value = {View.SongView.songDtoResponseView.class})
     @PostMapping("/song/")
-    public ResponseEntity<SongDtoResponse> createSong(@RequestBody SongDtoRequest songDtoRequest) {
+    public ResponseEntity<SongDto> createSong(@RequestBody SongDtoRequest songDtoRequest) {
 
         if(songDtoRequest.getArtistId() == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -198,7 +200,7 @@ public class SongController {
             if(song.getYear() == null || song.getAlbum() == null || song.getTitle() == null) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
             }else {
-                return ResponseEntity.status(HttpStatus.CREATED).body(songDtoConverter.toSongDto(songService.add(song)));
+                return ResponseEntity.status(HttpStatus.CREATED).body(songDtoConverter.of(songService.add(song)));
             }
         }else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -250,8 +252,9 @@ public class SongController {
             description = "No se ha encontrado la canción",
             content = @Content)
     })
+    @JsonView(value = {View.SongView.songDtoResponseView.class})
     @PutMapping("/song/{id}")
-    public ResponseEntity<SongDtoResponse> editSong(
+    public ResponseEntity<SongDto> editSong(
             @Parameter(
                     description = "ID de la canción a editar",
                     schema = @Schema(implementation = Long.class),
@@ -280,7 +283,7 @@ public class SongController {
                 toEdit.setAlbum(song.getAlbum());
                 toEdit.setTitle(song.getTitle());
                 toEdit.setArtist(artist);
-                return Optional.of(songDtoConverter.toSongDto(songService.edit(toEdit)));
+                return Optional.of(songDtoConverter.of(songService.edit(toEdit)));
             }).orElse(Optional.empty()));
         }
 

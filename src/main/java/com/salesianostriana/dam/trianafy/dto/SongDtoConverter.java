@@ -45,4 +45,21 @@ public class SongDtoConverter {
                 .build();
     }
 
+    public static SongDto of(Song song) {
+        ArtistDtoResponse artist = new ArtistDtoResponse();
+        if(song.getArtist() != null) {
+            artist = ArtistDtoConverter.toArtistDto(song.getArtist());
+        }
+        return SongDto
+                .builder()
+                .id(song.getId())
+                .title(song.getTitle())
+                .year(song.getYear())
+                .album(song.getAlbum())
+                .artistDto(artist)
+                .artistId(song.getArtist().getId())
+                .artist(song.getArtist().getName())
+                .build();
+    }
+
 }
