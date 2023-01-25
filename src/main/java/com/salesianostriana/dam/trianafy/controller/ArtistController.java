@@ -16,7 +16,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.validation.Valid;
+import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
@@ -62,12 +66,8 @@ public class ArtistController {
             content = @Content)
     })
     @GetMapping("/artist/")
-    public ResponseEntity<List<Artist>> getAllArtists() {
-        if(artistService.findAll().isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }else {
-            return ResponseEntity.status(HttpStatus.OK).body(artistService.findAll());
-        }
+    public List<Artist> getAllArtists() {
+        return artistService.findAll();
     }
     @Operation(summary = "Obtiene un artista en base a su ID")
     @ApiResponses(value = {
@@ -92,7 +92,7 @@ public class ArtistController {
             content = @Content)
     })
     @GetMapping("/artist/{id}")
-    public ResponseEntity<Artist> getArtistById(
+    public Artist getArtistById(
             @Parameter(
                     description = "ID del artista a buscar",
                     schema = @Schema(implementation = Long.class),
@@ -100,11 +100,7 @@ public class ArtistController {
                     required = true
             )
             @PathVariable Long id) {
-        if(artistService.existsById(id)) {
-            return ResponseEntity.of(artistService.findById(id));
-        }else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+        return artistService.findById(id);
     }
     @Operation(summary = "Crea un artista")
     @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true,
@@ -144,14 +140,15 @@ public class ArtistController {
             content = @Content)
     })
     @PostMapping("/artist/")
-    public ResponseEntity<Artist> createArtist(@RequestBody Artist artista) {
-        if(artista.getName() != null
-                && !artista.getName().isEmpty()
-                && !artista.getName().isBlank()) {
-            return ResponseEntity.status(HttpStatus.CREATED).body(artistService.add(artista));
-        } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
+    public ResponseEntity<Artist> createArtist(@Valid @RequestBody Artist artista) {
+        Artist created = artistService.add(artista);
+
+        URI createdURI = ServletUriComponentsBuilder
+                                    .fromCurrentRequest()
+                                    .path("/{id}")
+                                    .buildAndExpand(created.getId()).toUri();
+
+        return ResponseEntity.created(createdURI).body(created);
     }
     @Operation(summary = "Edita un artista en base a su ID")
     @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true,
@@ -191,22 +188,15 @@ public class ArtistController {
                 content = @Content)
     })
     @PutMapping("/artist/{id}")
-    public ResponseEntity<Artist> editArtist(
+    public Artist editArtist(
             @Parameter(
                     description = "ID del artista a editar",
                     schema = @Schema(implementation = Long.class),
                     name = "id",
                     required = true
             )
-            @PathVariable Long id, @RequestBody Artist artista) {
-        if(artistService.existsById(id)) {
-            return ResponseEntity.of(artistService.findById(id).map(toEdit -> {
-                toEdit.setName(artista.getName());
-                return Optional.of(artistService.edit(toEdit));
-            }).orElse(Optional.empty()));
-        }else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+            @PathVariable Long id, @Valid @RequestBody Artist artista) {
+        return artistService.edit(id, artista);
     }
     @Operation(summary = "Borra un artista en base a su ID")
     @ApiResponse(responseCode = "204",
@@ -221,12 +211,7 @@ public class ArtistController {
                     required = true
             )
             @PathVariable Long id) {
-        if(artistService.existsById(id)) {
-            songService.findByArtist(artistService.findById(id))
-                                                            .stream()
-                                                            .forEach(song -> song.setArtist(null));
             artistService.deleteById(id);
-        }
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 

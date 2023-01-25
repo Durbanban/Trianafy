@@ -21,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -202,7 +203,7 @@ public class PlaylistController {
             content = @Content)
     })
     @PostMapping("/list/")
-    public ResponseEntity<PlaylistDtoResponseCreation> createPlaylist(@RequestBody PlaylistDtoRequest playlistDtoRequest) {
+    public ResponseEntity<PlaylistDtoResponseCreation> createPlaylist(@Valid @RequestBody PlaylistDtoRequest playlistDtoRequest) {
         Playlist playlist = playlistDtoConverter.toPlaylist(playlistDtoRequest);
         if(playlistDtoRequest.getName() == null || playlistDtoRequest.getDescription() == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();

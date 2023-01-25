@@ -25,6 +25,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -183,13 +184,13 @@ public class SongController {
             content = @Content)
     })
     @PostMapping("/song/")
-    public ResponseEntity<SongDtoResponse> createSong(@RequestBody SongDtoRequest songDtoRequest) {
+    public ResponseEntity<SongDtoResponse> createSong(@Valid @RequestBody SongDtoRequest songDtoRequest) {
 
         if(songDtoRequest.getArtistId() == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         Song song = songDtoConverter.toSong(songDtoRequest);
-        Artist artist = artistService.findById(songDtoRequest.getArtistId()).orElse(null);
+        Artist artist = artistService.findById(songDtoRequest.getArtistId());
         if(artist != null) {
             song.setArtist(artist);
         }
@@ -264,7 +265,7 @@ public class SongController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         Song song = songDtoConverter.toSong(songDtoRequest);
-        Artist artist = artistService.findById(songDtoRequest.getArtistId()).orElse(null);
+        Artist artist = artistService.findById(songDtoRequest.getArtistId());
         song.setArtist(artist);
 
         if(!songService.existsById(id)) {

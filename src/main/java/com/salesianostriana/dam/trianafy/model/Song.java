@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 
 @Entity
 @NoArgsConstructor
@@ -18,8 +19,11 @@ public class Song {
     @GeneratedValue
     private Long id;
 
+    @NotEmpty
     private String title;
+
     private String album;
+
     @Column(name = "year_of_song")
     private String year;
 
