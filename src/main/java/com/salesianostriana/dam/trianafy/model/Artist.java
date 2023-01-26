@@ -24,7 +24,7 @@ public class Artist {
     @GeneratedValue
     private Long id;
 
-    @NotEmpty
+    @NotEmpty(message = "{artist.name.notempty}")
     private String name;
 
 }
