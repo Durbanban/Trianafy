@@ -14,11 +14,11 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Collections;
 import java.util.Map;
 
-@RestController
+/*@RestController
 @RequestMapping(ArtistErrorController.ERROR_PATH)
 public class ArtistErrorController extends AbstractErrorController {
 
-    /*Forma alternativa de declarlo en las application.properties*/
+    *//*Forma alternativa de declarlo en las application.properties*//*
     static final String ERROR_PATH = "/error";
 
     public String getErrorPath() {
@@ -44,4 +44,4 @@ public class ArtistErrorController extends AbstractErrorController {
     }
 
 
-}
+}*/

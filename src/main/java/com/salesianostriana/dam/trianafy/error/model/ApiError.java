@@ -27,9 +27,9 @@ public interface ApiError {
 
     static ApiError fromErrorAttributes(Map<String, Object> defaultErrorAttributesMap) {
 
-//        int statusCode = ((Integer)defaultErrorAttributesMap.get("status")).intValue();
+        int statusCode = ((Integer)defaultErrorAttributesMap.get("status")).intValue();
 
-        int statusCode = -1;
+        /*int statusCode = -1;
         HttpStatus status = null;
 
         if (defaultErrorAttributesMap.containsKey("status")) {
@@ -40,12 +40,12 @@ public interface ApiError {
                 status = HttpStatus.valueOf((String) defaultErrorAttributesMap.get("status"));
                 statusCode = status.value();
             }
-        }
+        }*/
 
         ApiErrorImpl result = ApiErrorImpl
                 .builder()
-//                .status(HttpStatus.valueOf(statusCode))
-                .status(status)
+                .status(HttpStatus.valueOf(statusCode))
+//                .status(status)
                 .message((String) defaultErrorAttributesMap.getOrDefault("message", "No message available"))
                 .path((String) defaultErrorAttributesMap.getOrDefault("path", "No path available"))
                 .build();

@@ -22,22 +22,22 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
-public class GlobalRestControllerAdvice /*extends ResponseEntityExceptionHandler*/ {
+public class GlobalRestControllerAdvice extends ResponseEntityExceptionHandler {
 
-    /*@Override
+    @Override
     protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpHeaders headers, HttpStatus status, WebRequest request) {
         return buildApiError(ex, request, status);
-    }*/
+    }
 
-    /*@Override
+    @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
         return buildApiErrorWithSubErrors("Error de validación. Compruebe la sublista", request, status, ex.getAllErrors());
-    }*/
+    }
 
-    /*@Override
+    @Override
     protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
         return buildApiError(ex, request, status);
-    }*/
+    }
 
     @ExceptionHandler({
             ArtistNotFoundException.class,
