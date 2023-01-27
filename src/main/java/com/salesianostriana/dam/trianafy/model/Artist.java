@@ -1,6 +1,7 @@
 package com.salesianostriana.dam.trianafy.model;
 
 
+import com.salesianostriana.dam.trianafy.validation.annotation.UniqueArtistName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,6 +25,7 @@ public class Artist {
     @GeneratedValue
     private Long id;
 
+    @UniqueArtistName(message = "{artist.name.uniqueartistname}")
     @NotEmpty(message = "{artist.name.notempty}")
     private String name;
 

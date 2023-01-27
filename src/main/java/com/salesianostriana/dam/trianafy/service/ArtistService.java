@@ -61,4 +61,8 @@ public class ArtistService {
         return repository.existsById(id);
     }
 
+    public boolean artistExists(String name) {
+        return repository.existsByName(name);
+    }
+
 }

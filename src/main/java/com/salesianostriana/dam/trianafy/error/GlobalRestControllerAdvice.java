@@ -5,7 +5,6 @@ import com.salesianostriana.dam.trianafy.error.model.impl.ApiErrorImpl;
 import com.salesianostriana.dam.trianafy.error.model.impl.ApiValidationSubError;
 import com.salesianostriana.dam.trianafy.exception.ArtistNotFoundException;
 import com.salesianostriana.dam.trianafy.exception.EmptyArtistListException;
-import org.hibernate.validator.internal.engine.path.PathImpl;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +16,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import org.hibernate.validator.internal.engine.path.PathImpl;
 
 import javax.persistence.EntityNotFoundException;
 import javax.validation.ConstraintViolationException;
@@ -61,7 +61,7 @@ public class GlobalRestControllerAdvice extends ResponseEntityExceptionHandler {
                                                                     .message(v.getMessage())
                                                                     .rejectedValue(v.getInvalidValue())
                                                                     .object(v.getRootBean().getClass().getSimpleName())
-                                                                    .field(((PathImpl)v.getPropertyPath()).getLeafNode().asString())
+                                                                    .field(((PathImpl) v.getPropertyPath()).getLeafNode().asString())
                                                                     .build();
                                                         }
                                                 )
