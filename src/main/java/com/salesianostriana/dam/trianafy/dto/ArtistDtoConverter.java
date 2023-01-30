@@ -13,4 +13,11 @@ public class ArtistDtoConverter {
                 .artist(artist.getName())
                 .build();
     }
+
+    public static Artist toArtist(ArtistDtoRequest artist) {
+        return Artist
+                .builder()
+                .name(artist.getName())
+                .build();
+    }
 }

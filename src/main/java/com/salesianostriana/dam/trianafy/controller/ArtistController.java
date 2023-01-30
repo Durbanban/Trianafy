@@ -1,5 +1,7 @@
 package com.salesianostriana.dam.trianafy.controller;
 
+import com.salesianostriana.dam.trianafy.dto.ArtistDtoConverter;
+import com.salesianostriana.dam.trianafy.dto.ArtistDtoRequest;
 import com.salesianostriana.dam.trianafy.model.Artist;
 import com.salesianostriana.dam.trianafy.service.ArtistService;
 import com.salesianostriana.dam.trianafy.service.SongService;
@@ -143,8 +145,11 @@ public class ArtistController {
             content = @Content)
     })
     @PostMapping("/artist/")
-    public ResponseEntity<Artist> createArtist(@Valid @RequestBody Artist artista) {
-        Artist created = artistService.add(artista);
+    public ResponseEntity<Artist> createArtist(@Valid @RequestBody ArtistDtoRequest artista) {
+
+        Artist created = ArtistDtoConverter.toArtist(artista);
+
+        artistService.add(created);
 
         URI createdURI = ServletUriComponentsBuilder
                                     .fromCurrentRequest()

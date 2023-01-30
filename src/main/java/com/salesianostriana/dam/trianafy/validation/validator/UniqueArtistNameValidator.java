@@ -25,6 +25,8 @@ public class UniqueArtistNameValidator implements ConstraintValidator<UniqueArti
 
     @Override
     public boolean isValid(String s, ConstraintValidatorContext constraintValidatorContext) {
-        return StringUtils.hasText(s) && !artistService.artistExists(s);
+
+        boolean exists = artistService.artistExists(s);
+        return StringUtils.hasText(s) && !exists;
     }
 }
