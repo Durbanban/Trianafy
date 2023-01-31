@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
+import javax.validation.constraints.NotBlank;
 
 @Data
 @NoArgsConstructor
@@ -13,9 +14,16 @@ import javax.persistence.Column;
 @Builder
 public class SongDtoRequest {
 
+    @NotBlank(message = "{song.title.notblank}")
     private String title;
+
+
     private Long artistId;
+
+    @NotBlank(message = "{song.album.notblank}")
     private String album;
+
+    @NotBlank(message = "{song.year.notblank}")
     private String year;
 
 

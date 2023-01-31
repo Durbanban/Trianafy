@@ -16,16 +16,12 @@ public class SongDtoResponse {
 
     private Long id;
 
-    @NotEmpty
     private String title;
 
-    @NotBlank
     private String album;
 
-    @NotBlank
     private String year;
 
-    @NotBlank
     private String artist;
 
 

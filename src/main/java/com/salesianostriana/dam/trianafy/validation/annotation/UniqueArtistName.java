@@ -12,7 +12,7 @@ import java.lang.annotation.*;
 @Documented
 public @interface UniqueArtistName {
 
-    String message() default "El nombre del artiste no debe repetirse. El artista ya existe";
+    String message() default "El nombre del artista no debe repetirse. El artista ya existe";
 
     Class<?>[] groups() default {};
 

@@ -145,18 +145,18 @@ public class ArtistController {
             content = @Content)
     })
     @PostMapping("/artist/")
-    public ResponseEntity<Artist> createArtist(@Valid @RequestBody ArtistDtoRequest artista) {
+    public ResponseEntity<Artist> createArtist(@Valid @RequestBody ArtistDtoRequest dto) {
 
-        Artist created = ArtistDtoConverter.toArtist(artista);
+        Artist artista = ArtistDtoConverter.toArtist(dto);
 
-        artistService.add(created);
+        artistService.add(artista);
 
         URI createdURI = ServletUriComponentsBuilder
                                     .fromCurrentRequest()
                                     .path("/{id}")
-                                    .buildAndExpand(created.getId()).toUri();
+                                    .buildAndExpand(artista.getId()).toUri();
 
-        return ResponseEntity.created(createdURI).body(created);
+        return ResponseEntity.created(createdURI).body(artista);
     }
     @Operation(summary = "Edita un artista en base a su ID")
     @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true,
@@ -203,7 +203,8 @@ public class ArtistController {
                     name = "id",
                     required = true
             )
-            @PathVariable Long id, @Valid @RequestBody Artist artista) {
+            @PathVariable Long id, @Valid @RequestBody ArtistDtoRequest dto) {
+        Artist artista = ArtistDtoConverter.toArtist(dto);
         return artistService.edit(id, artista);
     }
     @Operation(summary = "Borra un artista en base a su ID")
