@@ -5,6 +5,8 @@ import com.salesianostriana.dam.trianafy.error.model.impl.ApiErrorImpl;
 import com.salesianostriana.dam.trianafy.error.model.impl.ApiValidationSubError;
 import com.salesianostriana.dam.trianafy.exception.ArtistNotFoundException;
 import com.salesianostriana.dam.trianafy.exception.EmptyArtistListException;
+import com.salesianostriana.dam.trianafy.exception.EmptySongListException;
+import com.salesianostriana.dam.trianafy.exception.SongNotFoundException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -73,7 +75,9 @@ public class GlobalRestControllerAdvice extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler({
             ArtistNotFoundException.class,
-            EmptyArtistListException.class
+            EmptyArtistListException.class,
+            EmptySongListException.class,
+            SongNotFoundException.class
     })
     public ResponseEntity<?> handleNotFoundException(EntityNotFoundException ex, WebRequest request) {
 

@@ -412,8 +412,8 @@ public class PlaylistController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }else {
             if(songService.existsById(id2)) {
-                if(playlistService.findById(id1).get().getSongs().contains(songService.findById(id2).get())) {
-                    return ResponseEntity.status(HttpStatus.OK).body(songDtoConverter.toSongDtoById(songService.findById(id2).get()));
+                if(playlistService.findById(id1).get().getSongs().contains(songService.findById(id2))) {
+                    return ResponseEntity.status(HttpStatus.OK).body(SongDtoConverter.toSongDtoById(songService.findById(id2)));
                 }else {
                     return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
                 }
@@ -505,7 +505,7 @@ public class PlaylistController {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }else {
                 Playlist pl = playlistService.findById(id1).get();
-                Song s = songService.findById(id2).get();
+                Song s = songService.findById(id2);
                 pl.addSong(s);
                 playlistService.edit(pl);
                 return ResponseEntity.status(HttpStatus.CREATED).body(playlistDtoConverter.toPlayListDtoAllSongs(pl));
@@ -539,7 +539,7 @@ public class PlaylistController {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }else {
                 Playlist pl = playlistService.findById(id1).get();
-                Song s = songService.findById(id2).get();
+                Song s = songService.findById(id2);
                 if(pl.getSongs().contains(s)) {
                     while (pl.getSongs().contains(s)) {
                         pl.deleteSong(s);

@@ -23,9 +23,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 
 import javax.validation.Valid;
+import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -86,16 +88,14 @@ public class SongController {
             content = @Content)
     })
     @GetMapping("/song/")
-    public ResponseEntity<List<SongDtoResponse>> getAllSongs() {
-        if(songService.findAll().isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }else {
+    public List<SongDtoResponse> getAllSongs() {
+
             List<SongDtoResponse> result = songService.findAll()
                     .stream()
                     .map(SongDtoConverter::toSongDto)
                     .collect(Collectors.toList());
-            return ResponseEntity.status(HttpStatus.OK).body(result);
-        }
+            return result;
+
     }
     @Operation(summary = "Obtiene una canción en base a su ID")
     @ApiResponses(value = {
@@ -126,7 +126,7 @@ public class SongController {
             content = @Content)
     })
     @GetMapping("/song/{id}")
-    public ResponseEntity<SongDtoResponseById> getSongById(
+    public SongDtoResponseById getSongById(
             @Parameter(
                     description = "ID de la canción a buscar",
                     schema = @Schema(implementation = Long.class),
@@ -134,11 +134,10 @@ public class SongController {
                     required = true
             )
             @PathVariable Long id) {
-        if(songService.existsById(id)) {
-            return ResponseEntity.status(HttpStatus.OK).body(songDtoConverter.toSongDtoById(songService.findById(id).get()));
-        }else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+        Song song = songService.findById(id);
+        return SongDtoConverter.toSongDtoById(song);
+
+
     }
     @Operation(summary = "Crea una canción")
     @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true,
@@ -186,24 +185,19 @@ public class SongController {
     @PostMapping("/song/")
     public ResponseEntity<SongDtoResponse> createSong(@Valid @RequestBody SongDtoRequest songDtoRequest) {
 
-        if(songDtoRequest.getArtistId() == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
+
         Song song = songDtoConverter.toSong(songDtoRequest);
         Artist artist = artistService.findById(songDtoRequest.getArtistId());
-        if(artist != null) {
-            song.setArtist(artist);
-        }
+        song.setArtist(artist);
+        SongDtoResponse response = SongDtoConverter.toSongDto(songService.add(song));
 
-        if(artistService.existsById(songDtoRequest.getArtistId())) {
-            if(song.getYear() == null || song.getAlbum() == null || song.getTitle() == null) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-            }else {
-                return ResponseEntity.status(HttpStatus.CREATED).body(songDtoConverter.toSongDto(songService.add(song)));
-            }
-        }else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
+
+        URI createdURI = ServletUriComponentsBuilder
+                                    .fromCurrentRequest()
+                                    .path("/{id}")
+                                    .buildAndExpand(song.getId()).toUri();
+
+        return ResponseEntity.created(createdURI).body(response);
     }
     @Operation(summary = "Edita una canción en base a su ID")
     @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true,
@@ -252,38 +246,23 @@ public class SongController {
             content = @Content)
     })
     @PutMapping("/song/{id}")
-    public ResponseEntity<SongDtoResponse> editSong(
+    public SongDtoResponse editSong(
             @Parameter(
                     description = "ID de la canción a editar",
                     schema = @Schema(implementation = Long.class),
                     name = "id",
                     required = true
             )
-            @PathVariable Long id, @RequestBody SongDtoRequest songDtoRequest) {
+            @PathVariable Long id, @Valid @RequestBody SongDtoRequest songDtoRequest) {
 
-        if(songDtoRequest.getArtistId() == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
+
         Song song = songDtoConverter.toSong(songDtoRequest);
         Artist artist = artistService.findById(songDtoRequest.getArtistId());
         song.setArtist(artist);
 
-        if(!songService.existsById(id)) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }else if(song.getArtist() == null
-                || song.getTitle() == null
-                || song.getYear() == null
-                || song.getAlbum() == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }else {
-            return ResponseEntity.of(songService.findById(id).map(toEdit -> {
-                toEdit.setYear(song.getYear());
-                toEdit.setAlbum(song.getAlbum());
-                toEdit.setTitle(song.getTitle());
-                toEdit.setArtist(artist);
-                return Optional.of(songDtoConverter.toSongDto(songService.edit(toEdit)));
-            }).orElse(Optional.empty()));
-        }
+        return SongDtoConverter.toSongDto(songService.edit(id, song));
+
+
 
     }
     @Operation(summary = "Borra una canción en base a su ID")
@@ -299,16 +278,9 @@ public class SongController {
                     required = true
             )
             @PathVariable Long id) {
-        if(songService.existsById(id)) {
-            List<Playlist> playlistsWithSong = playlistService.findPlaylistBySong(songService.findById(id).get());
-            playlistsWithSong
-                    .stream().forEach(playlist -> {
-                        while(playlist.getSongs().contains(songService.findById(id).get())) {
-                            playlist.deleteSong(songService.findById(id).get());
-                        }
-                    });
-            songService.deleteById(id);
-        }
+
+        songService.deleteById(id);
+
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 

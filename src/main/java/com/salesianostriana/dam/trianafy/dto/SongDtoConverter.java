@@ -30,7 +30,7 @@ public class SongDtoConverter {
                 .build();
     }
 
-    public SongDtoResponseById toSongDtoById(Song song) {
+    public static SongDtoResponseById toSongDtoById(Song song) {
         ArtistDtoResponse artist = new ArtistDtoResponse();
         if(song.getArtist() != null) {
             artist = ArtistDtoConverter.toArtistDto(song.getArtist());

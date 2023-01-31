@@ -30,11 +30,11 @@ public class TrianafyBaseApplication {
 		SpringApplication.run(TrianafyBaseApplication.class, args);
 	}
 
-	@Bean
+	/*@Bean
 	public CommandLineRunner init(ApplicationContext ctx) {
 		return args -> {
 			Arrays.stream(ctx.getBeanDefinitionNames()).forEach(System.out::println);
 		};
-	}
+	}*/
 
 }

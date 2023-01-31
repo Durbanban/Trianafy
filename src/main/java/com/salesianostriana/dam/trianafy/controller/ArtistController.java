@@ -220,7 +220,7 @@ public class ArtistController {
                     required = true
             )
             @PathVariable Long id) {
-            artistService.deleteById(id);
+        artistService.deleteById(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
