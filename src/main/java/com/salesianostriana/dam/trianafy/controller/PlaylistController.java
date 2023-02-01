@@ -19,9 +19,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 
 import javax.validation.Valid;
+import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -32,12 +34,7 @@ import java.util.stream.Collectors;
 public class PlaylistController {
 
     private final PlaylistService playlistService;
-
-    private final PlaylistDtoConverter playlistDtoConverter;
-
     private final SongService songService;
-
-    private final SongDtoConverter songDtoConverter;
 
     @Operation(summary = "Obtiene todas las listas de reproducción")
     @ApiResponses(value = {
@@ -70,17 +67,15 @@ public class PlaylistController {
             content = @Content)
     })
     @GetMapping("/list/")
-    public ResponseEntity<List<PlaylistDtoResponseAll>> getAllPlaylists() {
-        if(playlistService.findAll().isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }else {
-            List<PlaylistDtoResponseAll> listDto = playlistService.findAll()
-                                                                    .stream()
-                                                                    .map(playlistDtoConverter::toPlaylistDto)
-                                                                    .collect(Collectors.toList());
-            return ResponseEntity.status(HttpStatus.OK).body(listDto);
+    public List<PlaylistDtoResponseAll> getAllPlaylists() {
 
-        }
+        List<PlaylistDtoResponseAll> listDto = playlistService.findAll()
+                                                                .stream()
+                                                                .map(PlaylistDtoConverter::toPlaylistDto)
+                                                                .collect(Collectors.toList());
+        return listDto;
+
+
     }
 
     @Operation(summary = "Obtiene una lista de reproducción en base a su ID")
@@ -149,7 +144,7 @@ public class PlaylistController {
             content = @Content)
     })
     @GetMapping("/list/{id}")
-    public ResponseEntity<PlaylistDtoResponseAllSongs> getPlaylistById(
+    public PlaylistDtoResponseAllSongs getPlaylistById(
             @Parameter(
                     description = "ID de la lista de reproducción a buscar",
                     schema = @Schema(implementation = Long.class),
@@ -157,11 +152,9 @@ public class PlaylistController {
                     required = true
             )
             @PathVariable Long id) {
-        if(playlistService.existsById(id)) {
-            return ResponseEntity.status(HttpStatus.OK).body(playlistDtoConverter.toPlayListDtoAllSongs(playlistService.findById(id).get()));
-        }else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+
+        return PlaylistDtoConverter.toPlayListDtoAllSongs(playlistService.findById(id));
+
     }
     @Operation(summary = "Crea una lista de reproducción")
     @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true,
@@ -204,12 +197,17 @@ public class PlaylistController {
     })
     @PostMapping("/list/")
     public ResponseEntity<PlaylistDtoResponseCreation> createPlaylist(@Valid @RequestBody PlaylistDtoRequest playlistDtoRequest) {
-        Playlist playlist = playlistDtoConverter.toPlaylist(playlistDtoRequest);
-        if(playlistDtoRequest.getName() == null || playlistDtoRequest.getDescription() == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }else {
-            return ResponseEntity.status(HttpStatus.CREATED).body(playlistDtoConverter.toPlayListDtoCreation(playlistService.add(playlist)));
-        }
+
+        Playlist playlist = PlaylistDtoConverter.toPlaylist(playlistDtoRequest);
+
+        PlaylistDtoResponseCreation response = PlaylistDtoConverter.toPlayListDtoCreation(playlistService.add(playlist));
+
+        URI createdURI = ServletUriComponentsBuilder
+                                    .fromCurrentRequest()
+                                    .path("/{id}")
+                                    .buildAndExpand(playlist.getId()).toUri();
+
+        return ResponseEntity.created(createdURI).body(response);
 
     }
     @Operation(summary = "Edita una lista de reproducción en base a su ID")
@@ -255,7 +253,7 @@ public class PlaylistController {
             content = @Content)
     })
     @PutMapping("/list/{id}")
-    public ResponseEntity<PlaylistDtoResponseAll> editPlaylist(
+    public PlaylistDtoResponseAll editPlaylist(
             @Parameter(
                     description = "ID de la lista de reproducción a editar",
                     schema = @Schema(implementation = Long.class),
@@ -263,19 +261,10 @@ public class PlaylistController {
                     required = true
             )
             @PathVariable Long id, @RequestBody PlaylistDtoRequest playlistDtoRequest) {
-        Playlist playlist = playlistDtoConverter.toPlaylist(playlistDtoRequest);
-        if(!playlistService.existsById(id)) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }else if(playlist.getName() == null || playlist.getDescription() == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }else {
-            return ResponseEntity.of(playlistService.findById(id)
-                    .map(toEdit -> {
-                        toEdit.setName(playlist.getName());
-                        toEdit.setDescription(playlist.getDescription());
-                        return Optional.of(playlistDtoConverter.toPlaylistDto(playlistService.edit(toEdit)));
-                    }).orElse(Optional.empty()));
-        }
+
+        Playlist playlist = PlaylistDtoConverter.toPlaylist(playlistDtoRequest);
+
+        return PlaylistDtoConverter.toPlaylistDto(playlistService.edit(id, playlist));
     }
     @Operation(summary = "Borra una lista de reproducción en base a su ID")
     @ApiResponse(responseCode = "204",
@@ -360,7 +349,7 @@ public class PlaylistController {
         if(!playlistService.existsById(id)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }else {
-            PlaylistDtoResponseAllSongs playlistDto = playlistDtoConverter.toPlayListDtoAllSongs(playlistService.findById(id).get());
+            PlaylistDtoResponseAllSongs playlistDto = PlaylistDtoConverter.toPlayListDtoAllSongs(playlistService.findById(id));
             return ResponseEntity.status(HttpStatus.OK).body(playlistDto);
         }
     }
@@ -412,7 +401,7 @@ public class PlaylistController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }else {
             if(songService.existsById(id2)) {
-                if(playlistService.findById(id1).get().getSongs().contains(songService.findById(id2))) {
+                if(playlistService.findById(id1).getSongs().contains(songService.findById(id2))) {
                     return ResponseEntity.status(HttpStatus.OK).body(SongDtoConverter.toSongDtoById(songService.findById(id2)));
                 }else {
                     return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -504,11 +493,11 @@ public class PlaylistController {
             if(!songService.existsById(id2)){
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }else {
-                Playlist pl = playlistService.findById(id1).get();
+                Playlist pl = playlistService.findById(id1);
                 Song s = songService.findById(id2);
                 pl.addSong(s);
-                playlistService.edit(pl);
-                return ResponseEntity.status(HttpStatus.CREATED).body(playlistDtoConverter.toPlayListDtoAllSongs(pl));
+                playlistService.edit(id1, pl);
+                return ResponseEntity.status(HttpStatus.CREATED).body(PlaylistDtoConverter.toPlayListDtoAllSongs(pl));
             }
         }
     }
@@ -538,12 +527,12 @@ public class PlaylistController {
             if(!songService.existsById(id2)) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }else {
-                Playlist pl = playlistService.findById(id1).get();
+                Playlist pl = playlistService.findById(id1);
                 Song s = songService.findById(id2);
                 if(pl.getSongs().contains(s)) {
                     while (pl.getSongs().contains(s)) {
                         pl.deleteSong(s);
-                        playlistService.edit(pl);
+                        playlistService.edit(id1, pl);
                     }
                 }
                 return ResponseEntity.status(HttpStatus.NO_CONTENT).build();

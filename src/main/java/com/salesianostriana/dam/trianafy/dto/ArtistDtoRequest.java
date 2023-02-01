@@ -16,7 +16,7 @@ import javax.validation.constraints.NotEmpty;
 public class ArtistDtoRequest {
 
 
-    @UniqueArtistName(message = "{artist.name.uniqueartistname}")
-    @NotEmpty(message = "{artist.name.notempty}")
+    @UniqueArtistName(message = "{artistDtoRequest.name.uniqueartistname}")
+    @NotEmpty(message = "{artistDtoRequest.name.notempty}")
     private String name;
 }

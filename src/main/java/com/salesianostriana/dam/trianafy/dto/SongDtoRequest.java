@@ -17,20 +17,20 @@ import javax.validation.constraints.NotNull;
 @UniqueSong(
         titleField = "title",
         artistIdField = "artistId",
-        message = "{song.uniquesong}"
+        message = "{songDtoRequest.uniquesong}"
 )
 public class SongDtoRequest {
 
-    @NotBlank(message = "{song.title.notblank}")
+    @NotBlank(message = "{songDtoRequest.title.notblank}")
     private String title;
 
-    @NotNull(message = "{song.artistId.notnull}")
+    @NotNull(message = "{songDtoRequest.artistId.notnull}")
     private Long artistId;
 
-    @NotBlank(message = "{song.album.notblank}")
+    @NotBlank(message = "{songDtoRequest.album.notblank}")
     private String album;
 
-    @NotBlank(message = "{song.year.notblank}")
+    @NotBlank(message = "{songDtoRequest.year.notblank}")
     private String year;
 
 

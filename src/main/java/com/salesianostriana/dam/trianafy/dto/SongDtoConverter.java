@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class SongDtoConverter {
 
-    public Song toSong(SongDtoRequest dto) {
+    public static Song toSong(SongDtoRequest dto) {
         return Song
                 .builder()
                 .title(dto.getTitle())

@@ -43,8 +43,6 @@ public class SongController {
 
     private final ArtistService artistService;
 
-    private final SongDtoConverter songDtoConverter;
-
 
     @Operation(summary = "Obtiene todas las canciones")
     @ApiResponses(value = {
@@ -186,7 +184,7 @@ public class SongController {
     public ResponseEntity<SongDtoResponse> createSong(@Valid @RequestBody SongDtoRequest songDtoRequest) {
 
 
-        Song song = songDtoConverter.toSong(songDtoRequest);
+        Song song = SongDtoConverter.toSong(songDtoRequest);
         Artist artist = artistService.findById(songDtoRequest.getArtistId());
         song.setArtist(artist);
         SongDtoResponse response = SongDtoConverter.toSongDto(songService.add(song));
@@ -256,7 +254,7 @@ public class SongController {
             @PathVariable Long id, @Valid @RequestBody SongDtoRequest songDtoRequest) {
 
 
-        Song song = songDtoConverter.toSong(songDtoRequest);
+        Song song = SongDtoConverter.toSong(songDtoRequest);
         Artist artist = artistService.findById(songDtoRequest.getArtistId());
         song.setArtist(artist);
 

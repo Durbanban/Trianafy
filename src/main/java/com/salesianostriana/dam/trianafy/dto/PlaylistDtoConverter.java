@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 public class PlaylistDtoConverter {
 
 
-    public Playlist toPlaylist(PlaylistDtoRequest playlistDtoRequest) {
+    public static Playlist toPlaylist(PlaylistDtoRequest playlistDtoRequest) {
         List<Song> lista = new ArrayList<>();
         return Playlist
                 .builder()
@@ -24,7 +24,7 @@ public class PlaylistDtoConverter {
 
     }
 
-    public PlaylistDtoResponseAll toPlaylistDto(Playlist playlist) {
+    public static PlaylistDtoResponseAll toPlaylistDto(Playlist playlist) {
         return PlaylistDtoResponseAll
                 .builder()
                 .id(playlist.getId())
@@ -33,7 +33,7 @@ public class PlaylistDtoConverter {
                 .build();
     }
 
-    public PlaylistDtoResponseCreation toPlayListDtoCreation(Playlist playlist) {
+    public static PlaylistDtoResponseCreation toPlayListDtoCreation(Playlist playlist) {
         return PlaylistDtoResponseCreation
                 .builder()
                 .id(playlist.getId())
@@ -42,7 +42,7 @@ public class PlaylistDtoConverter {
                 .build();
     }
 
-    public PlaylistDtoResponseAllSongs toPlayListDtoAllSongs(Playlist playlist) {
+    public static PlaylistDtoResponseAllSongs toPlayListDtoAllSongs(Playlist playlist) {
         List<SongDtoResponse> list = playlist.getSongs()
                 .stream()
                 .map(SongDtoConverter::toSongDto)

@@ -1,6 +1,8 @@
 package com.salesianostriana.dam.trianafy.service;
 
 
+import com.salesianostriana.dam.trianafy.exception.EmptyPlaylistException;
+import com.salesianostriana.dam.trianafy.exception.PlaylistNotFoundException;
 import com.salesianostriana.dam.trianafy.model.Playlist;
 import com.salesianostriana.dam.trianafy.model.Song;
 import com.salesianostriana.dam.trianafy.repos.PlaylistRepository;
@@ -21,16 +23,25 @@ public class PlaylistService {
         return repository.save(playlist);
     }
 
-    public Optional<Playlist> findById(Long id) {
-        return repository.findById(id);
+    public Playlist findById(Long id) {
+        return repository.findById(id).orElseThrow(() -> new PlaylistNotFoundException(id));
     }
 
     public List<Playlist> findAll() {
-        return repository.findAll();
+        List<Playlist> playlists = repository.findAll();
+        if(playlists.isEmpty()) {
+            throw new EmptyPlaylistException();
+        }
+        return playlists;
     }
 
-    public Playlist edit(Playlist playlist) {
-        return repository.save(playlist);
+    public Playlist edit(Long id, Playlist toEdit) {
+
+        return repository.findById(id).map(pl -> {
+            pl.setName(toEdit.getName());
+            pl.setDescription(toEdit.getDescription());
+            return repository.save(pl);
+        }).orElseThrow(() -> new PlaylistNotFoundException(id));
     }
 
     public void delete(Playlist playlist) {

@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Data
 @NoArgsConstructor
@@ -13,8 +14,9 @@ import javax.validation.constraints.NotBlank;
 @Builder
 public class PlaylistDtoRequest {
 
-    @NotBlank(message = "{playlist.name.notblank}")
+    @NotBlank(message = "{playlistDtoRequest.name.notblank}")
     private String name;
 
+    @NotNull(message = "{playlistDtoRequest.description.notnull}")
     private String description;
 }
