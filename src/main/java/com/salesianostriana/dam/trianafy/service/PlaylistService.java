@@ -3,6 +3,7 @@ package com.salesianostriana.dam.trianafy.service;
 
 import com.salesianostriana.dam.trianafy.exception.EmptyPlaylistException;
 import com.salesianostriana.dam.trianafy.exception.PlaylistNotFoundException;
+import com.salesianostriana.dam.trianafy.exception.SongNotFoundException;
 import com.salesianostriana.dam.trianafy.model.Playlist;
 import com.salesianostriana.dam.trianafy.model.Song;
 import com.salesianostriana.dam.trianafy.repos.PlaylistRepository;
@@ -49,7 +50,10 @@ public class PlaylistService {
     }
 
     public void deleteById(Long id) {
-        repository.deleteById(id);
+        if(existsById(id)) {
+            repository.deleteById(id);
+
+        }
     }
 
     public boolean existsById(Long id) {
@@ -58,6 +62,57 @@ public class PlaylistService {
 
     public List<Playlist> findPlaylistBySong(Song song) {
         return repository.findPlaylistBySong(song);
+    }
+
+    public Song findSongFromPlaylist(Long idPl, Long idSong) {
+
+        Playlist playlist = findById(idPl);
+
+        boolean result;
+
+        result = playlist.getSongs()
+                                .stream()
+                                .anyMatch(s -> s.getId() == idSong);
+
+
+        if(result) {
+            return playlist.getSongs()
+                                .stream()
+                                .filter(s -> s.getId() == idSong)
+                                .findFirst().get();
+        }else {
+            throw new SongNotFoundException();
+        }
+
+    }
+
+    public void deleteSongFromPlaylist(Long idPl, Long idSong) {
+        Playlist playlist = findById(idPl);
+
+        boolean result;
+
+        result = playlist.getSongs()
+                                .stream()
+                                .anyMatch(s -> s.getId() == idSong);
+
+        if(!result) {
+            throw new SongNotFoundException(idSong);
+        }
+
+        while(result) {
+            Song song = playlist.getSongs()
+                                    .stream()
+                                    .filter(s -> s.getId() == idSong)
+                                    .findFirst().get();
+            playlist.deleteSong(song);
+            result = playlist.getSongs()
+                    .stream()
+                    .anyMatch(s -> s.getId() == idSong);
+        }
+
+        add(playlist);
+
+
     }
 
 
