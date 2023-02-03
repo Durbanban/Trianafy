@@ -17,6 +17,7 @@ import javax.validation.constraints.NotNull;
 @UniqueSong(
         titleField = "title",
         artistIdField = "artistId",
+        albumField = "album",
         message = "{songDtoRequest.uniquesong}"
 )
 public class SongDtoRequest {

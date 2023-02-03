@@ -1,6 +1,7 @@
 package com.salesianostriana.dam.trianafy.service;
 
 
+import com.salesianostriana.dam.trianafy.exception.ArtistHasSongsException;
 import com.salesianostriana.dam.trianafy.exception.ArtistNotFoundException;
 import com.salesianostriana.dam.trianafy.exception.EmptyArtistListException;
 import com.salesianostriana.dam.trianafy.model.Artist;
@@ -48,12 +49,16 @@ public class ArtistService {
     }
 
     public void deleteById(Long id) {
-        if(repository.existsById(id)) {
-            songService.findByArtist(findById(id))
+        if(existsById(id)) {
+            Artist artist = findById(id);
+            boolean checker = songService.findByArtist(findById(id))
                     .stream()
-                            .forEach(song -> song.setArtist(null));
-            repository.deleteById(id);
-
+                            .anyMatch(song -> song.getArtist().equals(artist));
+            if(!checker) {
+                repository.deleteById(id);
+            }else {
+                throw new ArtistHasSongsException(id);
+            }
         }
     }
 

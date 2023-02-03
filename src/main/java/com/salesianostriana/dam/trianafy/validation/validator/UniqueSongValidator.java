@@ -27,11 +27,14 @@ public class UniqueSongValidator implements ConstraintValidator<UniqueSong, Obje
 
     String artistIdField;
 
+    String albumField;
+
 
     @Override
     public void initialize(UniqueSong constraintAnnotation) {
         this.titleField = constraintAnnotation.titleField();
         this.artistIdField = constraintAnnotation.artistIdField();
+        this.albumField = constraintAnnotation.albumField();
     }
 
     @Override
@@ -45,6 +48,10 @@ public class UniqueSongValidator implements ConstraintValidator<UniqueSong, Obje
                 .forBeanPropertyAccess(obj)
                 .getPropertyValue(this.artistIdField);
 
+        String album = (String) PropertyAccessorFactory
+                .forBeanPropertyAccess(obj)
+                .getPropertyValue(this.albumField);
+
         boolean resultado;
 
         List<Song> lista = songService.findByTitle(title);
@@ -53,7 +60,7 @@ public class UniqueSongValidator implements ConstraintValidator<UniqueSong, Obje
 
         resultado = lista
                 .stream()
-                .anyMatch(song -> song.getTitle().equalsIgnoreCase(title) && song.getArtist().equals(artista));
+                .anyMatch(song -> song.getTitle().equalsIgnoreCase(title) && song.getArtist().equals(artista) && song.getAlbum().equalsIgnoreCase(album));
 
         return StringUtils.hasText(title) && !resultado;
 

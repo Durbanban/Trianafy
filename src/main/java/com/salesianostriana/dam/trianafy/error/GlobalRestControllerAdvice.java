@@ -84,6 +84,11 @@ public class GlobalRestControllerAdvice extends ResponseEntityExceptionHandler {
 
     }
 
+    @ExceptionHandler(ArtistHasSongsException.class)
+    public ResponseEntity<?> handleArtistHasSongsException(ArtistHasSongsException ex, WebRequest request) {
+        return buildApiError(ex, request, HttpStatus.BAD_REQUEST);
+    }
+
 
     private final ResponseEntity<Object> buildApiError(Exception ex, WebRequest request, HttpStatus status) {
         return ResponseEntity

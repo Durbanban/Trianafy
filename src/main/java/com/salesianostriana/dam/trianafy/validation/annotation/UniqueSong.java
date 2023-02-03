@@ -23,5 +23,7 @@ public @interface UniqueSong {
 
     String artistIdField();
 
+    String albumField();
+
 
 }
